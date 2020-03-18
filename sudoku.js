@@ -8,7 +8,7 @@ var tracerOrigin = [canvasHeight + 50, 0]
 var tracerDim = [canvasHeight, canvasHeight]
 
 var grid = [];
-var isNextMove = true;
+var solverGen = null;
 
 function possible(x, y, v) {
     for (var i = 0; i < 9; i++) {
@@ -31,19 +31,19 @@ function possible(x, y, v) {
     return true
 }
 
-function solver() {
+function* solver() {
     for (var i = 0; i < 9; i++) {
         for (var j = 0; j < 9; j++) {
             if (grid[i][j] === '.') {
                 for (var x = 1; x <= 9; x++) {
                     if (possible(i, j, x)) {
                         grid[i][j] = `${x}`
-                        // console.log(i, j, x)
-                        if (solver()) {
+                        yield
+                        if (yield* solver()) {
                             return true
                         } else {
                             grid[i][j] = '.'
-                            // console.log(i, j, '.')
+                            yield
                         }
                     }
                 }
@@ -55,9 +55,11 @@ function solver() {
 }
 
 function setup() {
-    grid = sudoku.board_string_to_grid(sudoku.generate(62, true))
+    solverGen = null
+    grid = sudoku.board_string_to_grid(sudoku.generate(44, true))
     createCanvas(canvasWidth, canvasHeight);
     background(0, 0, 0);
+    solverGen = solver()
 }
 
 function _drawLines() {
@@ -73,10 +75,10 @@ function _drawLines() {
     }
 }
 
-function _drawGrid() {
+function _drawValues() {
     textSize(canvasHeight/20);
     fill(255);
-    stroke(255);
+    stroke(200);
     for (var i = 0; i < 9; i ++) {
         for (var j = 0 ; j < 9; j++) {
             if (grid[i][j] !== ".") {
@@ -86,20 +88,20 @@ function _drawGrid() {
     }
 }
 
-
-function doNextMove() {
-    if (isNextMove) {
-        solver()
-        isNextMove = false
-    }
-}
-
 function _drawBoard() {
+    background(0)
     _drawLines()
-    _drawGrid()
+    _drawValues()
 }
 
 function draw() {
     _drawBoard()
-    doNextMove()
+    x = solverGen.next()
+    if (x.done) {
+        // textSize(64)
+        // fill(0, 255, 0)
+        // stroke(0, 255, 0)
+        // text("Solved!", sudokuOrigin[0] + sudokuDim[0]/2 - 100, sudokuOrigin[1] + sudokuDim[1]/2) - 20;
+        noLoop()
+    }
 }
