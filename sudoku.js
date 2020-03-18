@@ -8,20 +8,56 @@ var tracerOrigin = [canvasHeight + 50, 0]
 var tracerDim = [canvasHeight, canvasHeight]
 
 var grid = [];
-var solverGen = null;
 var isNextMove = true;
 
-function* solver() {
+function possible(x, y, v) {
     for (var i = 0; i < 9; i++) {
-        var x = yield;
+        if (grid[x][i] === `${v}`) {
+            return false;
+        }
+        if (grid[i][y] === `${v}`) {
+            return false;
+        }
     }
+    var x0 = int(x/3)*3;
+    var y0 = int(y/3)*3;
+    for (var i = 0; i < 3; i++) {
+        for (var j = 0; j < 3; j++) {
+            if (grid[x0 + i][y0 + j] === `${v}`) {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+function solver() {
+    for (var i = 0; i < 9; i++) {
+        for (var j = 0; j < 9; j++) {
+            if (grid[i][j] === '.') {
+                for (var x = 1; x <= 9; x++) {
+                    if (possible(i, j, x)) {
+                        grid[i][j] = `${x}`
+                        // console.log(i, j, x)
+                        if (solver()) {
+                            return true
+                        } else {
+                            grid[i][j] = '.'
+                            // console.log(i, j, '.')
+                        }
+                    }
+                }
+                return false
+            }
+        }
+    }
+    return true
 }
 
 function setup() {
-    grid = sudoku.board_string_to_grid(sudoku.generate(17, true))
+    grid = sudoku.board_string_to_grid(sudoku.generate(62, true))
     createCanvas(canvasWidth, canvasHeight);
     background(0, 0, 0);
-    solverGen = solver()
 }
 
 function _drawLines() {
@@ -53,8 +89,8 @@ function _drawGrid() {
 
 function doNextMove() {
     if (isNextMove) {
-        var x = solverGen.next()
-        isNextMove = !x.done
+        solver()
+        isNextMove = false
     }
 }
 
