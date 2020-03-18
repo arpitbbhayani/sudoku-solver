@@ -59,7 +59,7 @@ function setup() {
         var a = new Array(9)
         for (var j = 0 ; j < 9; j++) {
             grid[i][j] = grid[i][j] === "." ? 0 : parseInt(grid[i][j], 10)
-            a[j] = grid[i][j] === 0 ? '#FEE715' : 200;
+            a[j] = grid[i][j] === 0 ? '#FF0' : 255;
         }
         colorGrid.push(a)
     }
