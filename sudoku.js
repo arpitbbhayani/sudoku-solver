@@ -14,7 +14,6 @@ var isNextMove = true;
 function* solver() {
     for (var i = 0; i < 9; i++) {
         var x = yield;
-        grid[0][i] = 'A'
     }
 }
 
@@ -39,16 +38,16 @@ function _drawLines() {
 }
 
 function _drawGrid() {
-    // textSize(32);
-    // fill(255);
-    // stroke(255);
-    // for (var i = 0; i < 9; i ++) {
-    //     for (var j = 0 ; j < 9; j++) {
-    //         if (grid[i][j] !== ".") {
-    //             text(grid[i][j], j * width/9 + (width/9)/2 - 32/4, i * width/9 + (width/9)/2 + 32/4);
-    //         }
-    //     }
-    // }
+    textSize(canvasHeight/20);
+    fill(255);
+    stroke(255);
+    for (var i = 0; i < 9; i ++) {
+        for (var j = 0 ; j < 9; j++) {
+            if (grid[i][j] !== ".") {
+                text(grid[i][j], sudokuOrigin[0] + j * sudokuDim[0]/9 + (sudokuDim[0]/9)/2 - 32/4, sudokuOrigin[1] + i * sudokuDim[0]/9 + (sudokuDim[0]/9)/2 + 32/4);
+            }
+        }
+    }
 }
 
 
